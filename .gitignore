@@ -1,0 +1,12 @@
+# Build outputs and local executables
+/build/
+*.exe
+*.obj
+*.o
+*.out
+
+# Generated benchmark input datasets
+/data/fib/*
+/data/traffic/synthetic/*
+/data/traffic/enterprise/*
+/data/traffic/hotspot/*
