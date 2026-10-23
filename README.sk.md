@@ -1,31 +1,30 @@
-# Benchmarky vyhľadávania IPv4 na CPU, CUDA a hybridnom CPU/GPU
+# Benchmarky IPv4 LPM na CPU, CUDA a hybridnom CPU/GPU
 
-Tento repozitár patrí k bakalárskej práci o vyhľadávaní najdlhšej zodpovedajúcej IPv4 trasy (LPM). Obsahuje CPU a CUDA implementácie DIR-24-8 a multibit trie, hybridnú implementáciu DIR-24-8 pre CPU/GPU, pôvodné analytické skripty a namerané benchmarkové výsledky.
+Tento projekt som vytvoril v rámci bakalárskej práce o zrýchlení vyhľadávania najdlhšej zodpovedajúcej IPv4 trasy (LPM) pomocou CUDA. Na jednom mieste tu mám svoje CPU, CUDA a hybridné CPU/GPU implementácie DIR-24-8 a multibit trie, skripty na spracovanie meraní a výsledky benchmarkov.
 
-Veľké vstupné datasety sa generujú lokálne a Git ich nesleduje. Priložené benchmarkové CSV umožňujú prezerať namerané výsledky a znovu vytvoriť grafy bez opakovania benchmarkov.
+Vstupné datasety sa dajú vytvoriť lokálne, preto veľké generované súbory v repozitári nie sú. Pridal som však namerané CSV a grafy, takže výsledky možno prezerať bez opakovania benchmarkov.
 
-## Štruktúra repozitára
+## Čo repozitár obsahuje
 
 ```text
-analysis/plots/       Python skripty na spracovanie CSV a tvorbu grafov
-data/                 Generované vstupné dáta (Git ich ignoruje)
-docs/                 PDF bakalárskej práce a podporná dokumentácia
-docs/figures/         Voliteľné vysvetľujúce diagramy k dokumentácii
-.gitignore            Vylúčenie lokálneho buildu a generovaných datasetov
-results/benchmarks/   Namerané CSV rozdelené podľa implementácie
-results/figures/      Vygenerované grafy a odvodené tabuľky
-results/nsight-compute/ Voliteľné exporty z Nsight Compute
-src/common/           Pomocné funkcie na tvorbu ciest
-src/cpu/              CPU implementácie
-src/cuda/             CUDA implementácie
-src/hybrid/           Hybridná implementácia CPU/GPU
-src/data-generation/  Generátory vstupných datasetov
-build/                Lokálne výstupy kompilátora; Git ich ignoruje
+analysis/plots/         Python skripty na spracovanie CSV a tvorbu grafov
+data/                   Generované vstupné dáta (Git ich ignoruje)
+docs/                   Bakalárska práca a súvisiaca dokumentácia
+docs/figures/           Vysvetľujúce diagramy
+results/benchmarks/     Namerané CSV rozdelené podľa implementácie
+results/figures/        Grafy a odvodené tabuľky
+results/nsight-compute/ Exporty z Nsight Compute
+src/common/             Spoločné pomocné funkcie pre prácu s cestami
+src/cpu/                CPU implementácie
+src/cuda/               CUDA implementácie
+src/hybrid/             Hybridná implementácia CPU/GPU
+src/data-generation/    Generátory vstupných datasetov
+build/                  Lokálne výstupy kompilátora; Git ich ignoruje
 ```
 
-## Vybrané výsledky
+## Výsledky
 
-Tieto grafy vytvárajú skripty v `analysis/plots/` z priložených CSV.
+Nasledujúce grafy som vytvoril z priložených CSV pomocou skriptov v `analysis/plots/`.
 
 ![Enterprise prevádzka: porovnanie mediánu priepustnosti](results/figures/graphs_cpu_vs_gpu_enterprise_median/cpu_gpu_enterprise_realistic_priepustnost_median_line.png)
 
@@ -35,47 +34,46 @@ Tieto grafy vytvárajú skripty v `analysis/plots/` z priložených CSV.
 
 ![Porovnanie DIR-24-8 na CPU, CUDA a hybridnom CPU/GPU](results/figures/graphs_dir24_8_cpu_gpu_cuda_hybrid_all_traffic_v8_median/dir24_8_cpu_gpu_cuda_hybrid_vsetky_typy_prevadzky_priepustnost_ciarovy_graf.png)
 
-Všetky vytvorené grafy sú v `results/figures/`. Nižšie je aj bloková schéma riešenia z bakalárskej práce. Výsledky závisia od hardvéru a softvérového prostredia pri meraní; pri interpretácii alebo porovnávaní si pozrite bakalársku prácu a metadáta CSV.
+Všetky grafy sú v `results/figures/`. Schéma nižšie zobrazuje systém a pracovný postup projektu. Výsledky závisia od hardvéru a softvérového prostredia pri meraní; kontext k nim uvádzam v bakalárskej práci a metadátach CSV.
 
 ![Prehľad pracovného postupu a implementácií](docs/figures/system-overview.png)
 
 ## Opätovné vytvorenie grafov
 
-Nainštalujte Python 3 a knižnice uvedené v `requirements.txt`:
+Nainštaluj Python 3 a knižnice uvedené v `requirements.txt`:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-V koreňovom priečinku repozitára nastavte koreň projektu a spustite analytický skript. Napríklad:
+V koreňovom priečinku repozitára nastav koreň projektu a spusti analytický skript. Napríklad:
 
 ```powershell
 $env:LPM_PROJECT_ROOT = (Get-Location).Path
 python analysis/plots/process_cpu_gpu_all_lpm_enterprise.py
 ```
 
-Každý skript načíta príslušné CSV z `results/benchmarks/` a uloží grafy a odvodené tabuľky do `results/figures/`.
+Skripty načítajú príslušné CSV z `results/benchmarks/` a uložia grafy a odvodené tabuľky do `results/figures/`.
 
 ## Generovanie vstupných dát
 
-Generované dáta nie sú v Gite, pretože môžu byť veľké a repozitár obsahuje programy na ich vytvorenie.
+Generované datasety nie sú v Gite, pretože môžu byť veľké. Pridal som však programy na ich vytvorenie:
 
 - `generate_synthetic_FIB.cpp` predvolene ukladá FIB CSV do `data/fib/` a syntetické IP CSV do `data/traffic/synthetic/`.
 - `dataset_generator_enterprise_hotspot.py` číta syntetické IP CSV z `data/traffic/synthetic/` a ukladá BIN súbory enterprise a hotspot prevádzky do `data/traffic/enterprise/` a `data/traffic/hotspot/`.
 
-Cesty sa určujú relatívne od `LPM_PROJECT_ROOT`. Generátor v C++ vyžaduje C++ kompilátor. Benchmarkové implementácie vyžadujú vhodný C++ alebo CUDA nástrojový reťazec; CUDA programy vyžadujú kompatibilnú grafickú kartu. Priečinok `data/samples/` súčasné generátory nepoužívajú. Ak neskôr vznikne potreba ukážkových vstupov, patria tam iba malé súbory, ktoré možno ďalej šíriť.
+Tieto cesty sa určujú relatívne od `LPM_PROJECT_ROOT`. Generátor v C++ vyžaduje C++ kompilátor. Benchmarkové implementácie potrebujú vhodný C++ alebo CUDA nástrojový reťazec a na spustenie CUDA kompatibilnú grafickú kartu. Súčasné generátory priečinok `data/samples/` nepoužívajú.
 
-`build/` slúži na lokálne skompilované programy a dočasné build súbory. Na prezeranie kódu ani opätovné vytvorenie grafov nie je potrebný a nemá byť vo verziovacom systéme. `docs/figures/` je voliteľný priečinok na vysvetľujúce diagramy, napríklad schému systému alebo pracovného postupu. Benchmarkové grafy patria do `results/figures/`.
+Priečinok `build/` je určený na lokálne skompilované programy a dočasné build súbory; na prezeranie zdrojového kódu ani tvorbu grafov ho netreba. Vysvetľujúce diagramy dávam do `docs/figures/` a benchmarkové grafy do `results/figures/`.
 
-## Bakalárska práca a uvedenie autora
+## Bakalárska práca
 
-PDF práce je súčasťou repozitára v [`docs/thesis.pdf`](docs/thesis.pdf), aby si ju zamestnávatelia mohli prečítať. Citácia: Dzivjak, Tomáš. *Urýchlenie smerovania s použitím CUDA*. Bakalárska práca, Slovenská technická univerzita v Bratislave, Fakulta elektrotechniky a informatiky, 2026. Prezentácia zatiaľ nie je dostupná a možno ju doplniť neskôr.
+Bakalársku prácu *Urýchlenie smerovania s použitím CUDA* som napísal na Slovenskej technickej univerzite v Bratislave, Fakulte elektrotechniky a informatiky (2026). PDF je v súbore [docs/thesis.pdf](docs/thesis.pdf).
 
-Autorské práva k práci zostávajú autorovi podľa podmienok podpísanej licenčnej zmluvy a s prihliadnutím na práva k materiálom tretích strán. Verejná dostupnosť v registri záverečných prác sama osebe neznamená, že je práca voľným dielom. PDF je tu na čítanie a citovanie; repozitár neudeľuje všeobecnú licenciu na opätovné použitie textu, obrázkov ani materiálov tretích strán. Zdrojový kód projektu potrebuje vlastnú výslovnú licenciu.
+Odporúčaná citácia: Dzivjak, Tomáš. *Urýchlenie smerovania s použitím CUDA*. Bakalárska práca, Slovenská technická univerzita v Bratislave, Fakulta elektrotechniky a informatiky, 2026.
+
+PDF práce je tu na čítanie a citovanie. Autorské práva k nemu a práva k použitým materiálom tretích strán sa riadia príslušnou licenčnou zmluvou a ďalšími právami. Zdrojový kód zatiaľ nemá licenciu na ďalšie použitie.
 
 ## Licencia
 
-Licencia na zdrojový kód ešte nie je vybraná. Po výbere pridaj súbor `LICENSE`. PDF práce, kód, namerané výsledky a materiály tretích strán môžu vyžadovať samostatné práva a uvedenie zdrojov.
-
-
-
+K zdrojovému kódu som zatiaľ nepridal licenciu. Pokiaľ ju nedoplním, všetky práva zostávajú vyhradené. PDF práce a materiály tretích strán môžu mať samostatné podmienky.

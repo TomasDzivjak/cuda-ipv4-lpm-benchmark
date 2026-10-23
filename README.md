@@ -1,21 +1,20 @@
-# CPU, CUDA and Hybrid IPv4 Lookup Benchmarks
+# CUDA IPv4 Longest-Prefix-Match Benchmarks
 
-This repository accompanies a bachelor's thesis on IPv4 longest-prefix-match (LPM) lookup. It contains CPU and CUDA implementations of DIR-24-8 and multibit tries, a hybrid CPU/GPU DIR-24-8 implementation, the original analysis scripts, and measured benchmark results.
+I built this project as part of my bachelor's thesis on accelerating IPv4 longest-prefix-match (LPM) lookups with CUDA. It brings together my CPU, CUDA and hybrid CPU/GPU implementations of DIR-24-8 and multibit tries, the scripts I used to analyse the measurements, and the benchmark results.
 
-Large input datasets are generated locally and are not tracked. The supplied benchmark CSVs let you review the recorded measurements and regenerate the plots without rerunning the benchmarks.
+The input datasets can be generated locally, so I have not included the large generated files. The repository does include the measured CSV results and plots; you can review them without rerunning the benchmarks.
 
-## Repository layout
+## What is in the repository
 
 ```text
 analysis/plots/       Python scripts for processing CSV results and creating plots
 data/                 Generated input data (ignored by Git)
-docs/                 Thesis PDF and supporting documentation
-docs/figures/         Optional explanatory diagrams for documentation
-.gitignore            Excludes local build products and generated input datasets
-results/benchmarks/   Recorded CSV results, grouped by implementation
-results/figures/      Generated plots and derived tables
-results/nsight-compute/ Optional Nsight Compute exports
-src/common/           Shared project path helpers
+docs/                 Bachelor's thesis and supporting documentation
+docs/figures/         Explanatory diagrams
+results/benchmarks/   Measured CSV results, grouped by implementation
+results/figures/      Plots and derived tables
+results/nsight-compute/ Nsight Compute exports
+src/common/           Shared path helpers
 src/cpu/              CPU implementations
 src/cuda/             CUDA implementations
 src/hybrid/           Hybrid CPU/GPU implementation
@@ -23,9 +22,9 @@ src/data-generation/  Input dataset generators
 build/                Local compiler output; ignored by Git
 ```
 
-## Selected results
+## Results
 
-These plots are generated from the included CSV files by the scripts in `analysis/plots/`.
+I generated these plots from the included CSV files using the scripts in `analysis/plots/`.
 
 ![Enterprise traffic: median throughput comparison](results/figures/graphs_cpu_vs_gpu_enterprise_median/cpu_gpu_enterprise_realistic_priepustnost_median_line.png)
 
@@ -35,7 +34,7 @@ These plots are generated from the included CSV files by the scripts in `analysi
 
 ![DIR-24-8 CPU, CUDA and hybrid comparison](results/figures/graphs_dir24_8_cpu_gpu_cuda_hybrid_all_traffic_v8_median/dir24_8_cpu_gpu_cuda_hybrid_vsetky_typy_prevadzky_priepustnost_ciarovy_graf.png)
 
-The full set of generated figures is under `results/figures/`. The project workflow diagram from the thesis is included below. Results depend on the hardware and software environment used for each measurement; consult the thesis and CSV metadata when interpreting or comparing them.
+The complete set of plots is in `results/figures/`. The diagram below shows the system and workflow used in the project. Results depend on the hardware and software environment used for each measurement; the thesis and CSV metadata provide context for interpreting them.
 
 ![Project workflow and implementation overview](docs/figures/system-overview.png)
 
@@ -47,35 +46,34 @@ Install Python 3 and the libraries listed in `requirements.txt`:
 python -m pip install -r requirements.txt
 ```
 
-From the repository root, set the project root and run any analysis script. For example:
+From the repository root, set the project root and run an analysis script. For example:
 
 ```powershell
 $env:LPM_PROJECT_ROOT = (Get-Location).Path
 python analysis/plots/process_cpu_gpu_all_lpm_enterprise.py
 ```
 
-Each script reads the corresponding CSV files from `results/benchmarks/` and writes plots and derived tables to `results/figures/`.
+The scripts read the relevant CSV files from `results/benchmarks/` and save plots and derived tables to `results/figures/`.
 
-## Generate input data
+## Generate the input data
 
-Generated data is excluded from Git because the files can be large and the generator programs are included.
+The generated datasets are not tracked because they can be large. I have included the generators:
 
 - `generate_synthetic_FIB.cpp` writes FIB CSV files to `data/fib/` and synthetic IP CSV files to `data/traffic/synthetic/` by default.
 - `dataset_generator_enterprise_hotspot.py` reads synthetic IP CSV files from `data/traffic/synthetic/` and writes enterprise and hotspot query BIN files to `data/traffic/enterprise/` and `data/traffic/hotspot/`.
 
-These paths are resolved relative to `LPM_PROJECT_ROOT`. The C++ generator requires a C++ compiler. The benchmark implementations require an appropriate C++ or CUDA toolchain; CUDA execution requires a compatible GPU. The `data/samples/` directory is not used by the current generators. Add only small, redistributable example inputs there if they become useful.
+These paths are resolved relative to `LPM_PROJECT_ROOT`. The C++ generator requires a C++ compiler. The benchmark implementations require a suitable C++ or CUDA toolchain, and CUDA execution requires a compatible GPU. The current generators do not use `data/samples/`.
 
-`build/` is for local compiled programs and intermediate build files. It is not required for browsing the code or regenerating plots and should stay out of version control. `docs/figures/` is optional; use it for explanatory diagrams (for example, a workflow or system overview). Benchmark charts belong in `results/figures/`.
+`build/` is for local compiled programs and temporary build files; it is not needed to browse the source or recreate the plots. I use `docs/figures/` for explanatory diagrams and `results/figures/` for benchmark plots.
 
-## Thesis and attribution
+## Bachelor's thesis
 
-The thesis PDF is included at [`docs/thesis.pdf`](docs/thesis.pdf), so employers can read the complete work. Citation: Dzivjak, Tomáš. *Urýchlenie smerovania s použitím CUDA*. Bachelor's thesis, Slovak University of Technology in Bratislava, Faculty of Electrical Engineering and Information Technology, 2026. The presentation is unavailable and may be added later.
+I wrote the thesis *Urýchlenie smerovania s použitím CUDA* at the Slovak University of Technology in Bratislava, Faculty of Electrical Engineering and Information Technology (2026). The PDF is available at [docs/thesis.pdf](docs/thesis.pdf).
 
-The author retains copyright subject to the signed publication licence and the rights in third-party material included in the thesis. Public availability in the thesis register does not by itself place the work in the public domain. The thesis PDF is provided for reading and citation; this repository does not grant a blanket license to reuse its text, figures, or third-party material. The project source code needs its own explicit license.
+Suggested citation: Dzivjak, Tomáš. *Urýchlenie smerovania s použitím CUDA*. Bachelor's thesis, Slovak University of Technology in Bratislava, Faculty of Electrical Engineering and Information Technology, 2026.
+
+The thesis PDF is included for reading and citation. Its copyright and any third-party material in it remain subject to the applicable rights and publication agreement. The source code has no reuse license at this time.
 
 ## License
 
-No license has been selected for the source code yet. Add a `LICENSE` file after choosing the license. The thesis PDF, code, benchmark results, and any third-party material may need separate rights and attribution notices.
-
-
-
+I have not added a license for the source code. All rights are reserved unless I add a license later. The thesis PDF and third-party material may have separate rights.
